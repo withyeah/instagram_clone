@@ -1,6 +1,14 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>LIST</h1>
+<div class="d-flex my-5">
+    <div class="mx-4">
+        <img src="https://avatars3.githubusercontent.com/u/45819975?s=460&v=4" alt="img" class="rounded-circle" width="125px">
+    </div>
+    <div>
+        <h2>#WITHYEAH</h2>
+        <p>게시물 <b>{{ posts | length }}</b></p>
+    </div>    
+</div>
 <div class="d-flex flex-wrap justify-content-center">
     {% for post in posts %}
         {% include 'posts/_post.html' %}

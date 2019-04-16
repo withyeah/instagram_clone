@@ -1,7 +1,6 @@
 # posts/views.py
 from django.shortcuts import render, redirect, get_list_or_404, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
 from .forms import PostForm, ImageForm, CommentForm
 from .models import Post, Image, Comment
 
@@ -61,23 +60,35 @@ def delete(request, post_pk):
             post.delete()
     return redirect('posts:list')
 
-@login_required
-@require_POST
+@login_required 
 def create_comment(request, post_pk):
-   form = CommentForm(request.POST)
-   if form.is_valid():
-       comment = form.save(commit=False)
-       comment.user = request.user
-       comment.post_id = post_pk
-       comment.save()
-   return redirect('posts:list')
-
-@login_required
-@require_POST
+    post = get_object_or_404(Post, pk=post_pk)
+    if request.method == 'POST':
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.user = request.user
+            comment.post_id = post_pk
+            comment.save()
+    return redirect('posts:list')
+    
 def delete_comment(request, post_pk, comment_pk):
+    post = get_object_or_404(Post, pk=post_pk)
     comment = get_object_or_404(Comment, pk=comment_pk)
     if request.user == comment.user:
         if request.method == 'POST':
             comment.delete()
     return redirect('posts:list')
     
+    
+@login_required
+def like(request, post_pk):
+    post = get_object_or_404(Post, pk=post_pk)
+    # 이미 해당 유저가 like_users 에 존재하면 해당 유저를 삭제(좋아요 취소)
+    if request.user in post.like_users.all():
+        post.like_users.remove(request.user)
+    # 없으면 추가(좋아요)
+    else:
+        post.like_users.add(request.user)
+    return redirect('posts:list')
+        
