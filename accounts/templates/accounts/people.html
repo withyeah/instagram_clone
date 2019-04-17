@@ -4,6 +4,16 @@
   <div class="container">
     <h1 class="display-4">{{ people.profile.nickname }}</h1>
     <p class="lead">{{ people.profile.introduction }}</p>
+    <hr class="my-4">
+    <p class="lead">following : {{ people.followings.count }} / follower : {{ people.followers.count }}</p>
+    
+    {% if user != people %}
+        {% if user in people.followers.all %}
+        <a href="{% url 'accounts:follow' people.pk %}" class="btn btn-outline-primary">Unfollow</a>
+        {% else %}
+        <a href="{% url 'accounts:follow' people.pk %}" class="btn btn-primary">Follow</a>
+        {% endif %}
+    {% endif %}
   </div>
 </div>
 

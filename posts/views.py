@@ -1,11 +1,29 @@
 # posts/views.py
 from django.shortcuts import render, redirect, get_list_or_404, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
+from itertools import chain
 from .forms import PostForm, ImageForm, CommentForm
 from .models import Post, Image, Comment
 
 def list(request):
-    posts = get_list_or_404(Post.objects.order_by('-pk'))
+    # 1] 모든 유저의 전체 포스트 조회
+    # posts = get_list_or_404(Post.objects.order_by('-pk'))
+    
+    # 2] 내가 팔로우하고있는 유저의 포스트만 조회
+    # posts = Post.objects.filter(user__in=request.user.followings.all()).order_by('-pk')
+    
+    # 3] 2 + 나의 포스트 쿼리 합치기 (장고스럽게 체인하기)
+    followings = request.user.followings.all()
+    posts = Post.objects.filter(
+            Q(user__in=followings) | Q(user=request.user.id)
+        ).order_by('-pk')
+        
+    # 4] python chain (파이썬스럽게 체인하기)
+    # followings = request.user.followings.all()
+    # chain_followings = chain(followings, [request.user])
+    # posts = Post.objects.filter(user_in=chain_followings).order_by('-pk')
+        
     comment_form = CommentForm()
     context = {
         'posts': posts,
@@ -92,3 +110,14 @@ def like(request, post_pk):
         post.like_users.add(request.user)
     return redirect('posts:list')
         
+@login_required
+def explore(request):
+    # posts = Post.objects.order_by('-pk')
+    # 내 포스트는 제외하고 조회
+    posts = Post.objects.exclude(user=request.user).order_by('-pk')
+    comment_form = CommentForm()
+    context = {
+        'posts': posts,
+        'comment_form': comment_form,
+    }
+    return render(request, 'posts/explore.html', context)

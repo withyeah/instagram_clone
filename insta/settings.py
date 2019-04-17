@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'posts.apps.PostsConfig',
     'bootstrap4',
     'imagekit',
+    'django_extensions',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -125,3 +126,7 @@ STATIC_URL = '/static/'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+# 기본 User 모델을 오버라이드
+AUTH_USER_MODEL = 'accounts.User'
