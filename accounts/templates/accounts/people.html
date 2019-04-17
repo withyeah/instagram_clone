@@ -1,6 +1,13 @@
 {% extends 'base.html' %} {% block content %}
 <h1 class="text-center">{{ people.username }}'s Profile</h1>
-<h3 class="text-center">{{ people.username }}이 작성한 게시글</h3>
+{% if people.username == request.user.username %}
+<div class="text-center">
+    <a href="{% url 'accounts:update' %}" class="badge badge-info">정보수정</a>
+    <a href="{% url 'accounts:password' %}" class="badge badge-warning">비밀번호변경</a>
+</div>
+{% endif %}
+<br>
+<h3 class="text-center">{{ people.username }}'s Posts</h3>
 <div class="row">
     {% for post in people.post_set.all|dictsortreversed:"pk" %}
     <div class="col-4 my-2">
@@ -17,7 +24,7 @@
     {% endfor %}
 </div>
 <hr>
-<h3 class="text-center">{{ people.username }} 이 작성한 댓글</h3>
+<h3 class="text-center">{{ people.username }}'s Comments</h3>
 <div class="row">
     {% for comment in people.comment_set.all %}
     <div class="col-12 my-2">
@@ -30,7 +37,7 @@
             </div>
         </div>
     </div>
-        
+
     {% endfor %}
 </div>
 {% endblock %}
