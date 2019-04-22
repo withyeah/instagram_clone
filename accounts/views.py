@@ -12,6 +12,7 @@ from .models import Profile
 
 # Create your views here.
 
+@login_required
 def signup(request):
     if request.user.is_authenticated:
         return redirect('posts:list')

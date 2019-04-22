@@ -4,6 +4,7 @@ from . import views
 
 app_name = 'posts'
 urlpatterns = [
+    path('hashtag/<int:hash_pk>/', views.hashtag, name='hashtag'),
     path('explore/', views.explore, name='explore'),
     path('<int:post_pk>/like/', views.like, name='like'),
     path('<int:post_pk>/delete_comment/<int:comment_pk>/', views.delete_comment, name='delete_comment'),
