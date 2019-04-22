@@ -7,6 +7,8 @@ from .forms import PostForm, ImageForm, CommentForm
 from .models import Post, Image, Comment, Hashtag
 
 def list(request):
+    
+    if request.user.is_authenticated:
     # 1] 모든 유저의 전체 포스트 조회
     # posts = get_list_or_404(Post.objects.order_by('-pk'))
     
@@ -14,16 +16,17 @@ def list(request):
     # posts = Post.objects.filter(user__in=request.user.followings.all()).order_by('-pk')
     
     # 3] 2 + 나의 포스트 쿼리 합치기 (장고스럽게 체인하기)
-    followings = request.user.followings.all()
-    posts = Post.objects.filter(
-            Q(user__in=followings) | Q(user=request.user.id)
-        ).order_by('-pk')
+        followings = request.user.followings.all()
+        posts = Post.objects.filter(
+                Q(user__in=followings) | Q(user=request.user.id)
+            ).order_by('-pk')
         
     # 4] python chain (파이썬스럽게 체인하기)
     # followings = request.user.followings.all()
     # chain_followings = chain(followings, [request.user])
     # posts = Post.objects.filter(user_in=chain_followings).order_by('-pk')
-        
+    else:
+        posts = Post.objects.order_by('-pk')
     comment_form = CommentForm()
     context = {
         'posts': posts,
